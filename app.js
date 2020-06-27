@@ -31,11 +31,11 @@ require('./models/user')
 
 const mongoose = require('mongoose');
 var User = mongoose.model('User');
-mongoose.connect('mongodb://localhost:27017/chatroom-db',{
+mongoose.connect(process.env.MONGODB_URL,{
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
-      useFindAndModify:false
+  useFindAndModify:false
 })
 
 app.post('/register', (req, res,next) => {
