@@ -117,7 +117,6 @@ app.get('/token', function(req, res) {
 })
 app.get('/chat',authenticateToken, function(req, res, next) {
  var context= req.user.user;
-  console.log(context)
   res.render('index' ,{username:context});
 
 
@@ -134,54 +133,55 @@ io.on('connection', (socket) => {
 
 
   socket.on('chat message', (msg) => {
-      var message = users[socket.id] + ': ' + msg
-      socket.broadcast.emit('chat message', message);
+
+      socket.broadcast.emit('chat message', msg);
 
 
   });
 
   socket.on('new user',(username)=>{
     User.findOneAndUpdate({name:username},{socketID:socket.id},{new: true},function(err, doc) {
-      if (err) return res.send(500, {error: err});
-      console.log('socketid:     '+socket.id )
+      if (err) console.log(err)
       doc.save()
     });
-    let name = findUser(socket.id)
-    var message = name + ' connected ';
+    //let name = findUser(socket.id)
+    var message = username + ' connected ';
     socket.broadcast.emit('user connected',message)
 
 
 
   })
   socket.on('disconnect', function() {
-    var message =  findUser(socket.id) + ' disconnected'
+    var message =   ' disconnected'
     io.emit('chat message', message)
 
 
   });
-  socket.on('typing', function(typing, stopped){
-    var msg = findUser(socket.id) + ' is typing...'
+  socket.on('typing', function(typing, stopped,username){
+    var msg =username+' is typing...'
     if (typing === false ){
       socket.broadcast.emit('typing', msg )
     }else if(stopped === true){
-      socket.broadcast.emit('stopped',findUser(socket.id));
+      socket.broadcast.emit('stopped');
     }
   });
+  function findUser(sId){
 
+    User.find(
+        {}
+        , function (err, user) {
+          if (err) console.log(err);
+          console.log('sID:     '+sId )
+          console.log(user)
+          let username = user.name;
+          return username;
+        })
+
+
+  }
 });
 
-function findUser(sId){
-  console.log('sID:     '+sId )
-  User.findOne(
-      {socketID: sId}
-      , function (err, user) {
-        if (err) return next(err);
-        let username = user.name
-        return username;
-      })
 
-
-}
 
 
 // catch 404 and forward to error handler

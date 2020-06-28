@@ -5,11 +5,13 @@ $(document).ready(function(){
 
         $('#messages').append($('<li>').text('you joined').css('text-align', 'right'));
         var socket = io();
+        var username = document.getElementById("yy").innerText;
+        socket.emit('new user', username);
         $('form').submit(function(e){
             var input =  $('#m').val()
             e.preventDefault(); // prevents page reloading
             if(input.length > 0){
-                socket.emit('chat message', input);
+                socket.emit('chat message', username +' '+input);
                 $('#messages').append($("<li>").text(input).css('text-align', 'right'))
             }
 
@@ -20,7 +22,7 @@ $(document).ready(function(){
         var stopped = false;
         $('#m').on('input',function(e){
             e.preventDefault(); // prevents page reloading
-            socket.emit('typing',typing,stopped);
+            socket.emit('typing',typing,stopped,username);
             typing = true
             stopped = false;
 
@@ -42,14 +44,16 @@ $(document).ready(function(){
 
 
         socket.on('chat message', function(msg){
+
             $('#messages').append($('<li>').text(msg));
         });
         socket.on('user connected', function(msg){
+
             $('#messages').append($('<li>').text(msg));
         });
         socket.on('disconnect', function(msg){
-            $('#messages').append($('<li>').text(msg));
+            var message = username + msg
+            $('#messages').append($('<li>').text(message));
         });
-        var username = document.getElementById("yy").innerText;
-        socket.emit('new user', username);
+
     })})
