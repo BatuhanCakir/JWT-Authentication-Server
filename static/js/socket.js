@@ -10,7 +10,7 @@ $(document).ready(function(){
                     withCredentials: true
                 },
                 success: function(data){
-                    window.location.href = data;
+                    window.location.href = data
 
                 },
                 error : function (data) {
