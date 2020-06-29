@@ -123,6 +123,7 @@ app.get('/chat',authenticateToken, function(req, res, next) {
 });
 
 app.get('/logout', function(req, res, next) {
+  console.log(req.get('host'))
   res.cookie('refreshToken', '', {
     domain: req.hostname,
     maxAge: 0,
