@@ -126,12 +126,10 @@ app.get('/logout', function(req, res, next) {
   console.log(req.get('host'))
   console.log(req.hostname)
   res.cookie('refreshToken', '', {
-    domain: req.hostname.substring(4),
     maxAge: 0,
     overwrite: true,
   });
   res.cookie('token', '', {
-    domain: req.hostname.substring(4),
     maxAge: 0,
     overwrite: true,
   });
