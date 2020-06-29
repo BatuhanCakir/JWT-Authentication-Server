@@ -124,6 +124,7 @@ app.get('/chat',authenticateToken, function(req, res, next) {
 
 app.get('/logout', function(req, res, next) {
   console.log(req.get('host'))
+  console.log(req.hostname)
   res.cookie('refreshToken', '', {
     domain: req.hostname.substring(4),
     maxAge: 0,
