@@ -125,12 +125,12 @@ app.get('/chat',authenticateToken, function(req, res, next) {
 app.get('/logout', function(req, res, next) {
   console.log(req.get('host'))
   res.cookie('refreshToken', '', {
-    domain: req.hostname,
+    domain: req.hostname.substring(4),
     maxAge: 0,
     overwrite: true,
   });
   res.cookie('token', '', {
-    domain: req.hostname,
+    domain: req.hostname.substring(4),
     maxAge: 0,
     overwrite: true,
   });
