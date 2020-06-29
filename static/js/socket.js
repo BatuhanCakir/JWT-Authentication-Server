@@ -1,7 +1,26 @@
 $(document).ready(function(){
+
     $(function () {
+        $('#logout').on('click',function(e){
+            e.preventDefault();
+            $.ajax({
+                url: 'logout/',
+                type: "GET",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function(data){
+                    window.location.href = data ;
+
+                },
+                error : function (data) {
+                    console.log(data)
+
+                }
+            })
 
 
+        });
 
         $('#messages').append($('<li>').text('you joined').css('text-align', 'right'));
         var socket = io();

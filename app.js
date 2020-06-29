@@ -52,7 +52,7 @@ app.post('/register', (req, res,next) => {
       newUser.save()
 
     accessToken = generateAccessToken({user: req.body.name})
-    res.cookie('token', accessToken, { httpOnly: true });
+    res.cookie('token', accessToken, { httpOnly: true,overwrite: true });
     res.send('/chat')
 
     })
@@ -123,8 +123,17 @@ app.get('/chat',authenticateToken, function(req, res, next) {
 });
 
 app.get('/logout', function(req, res, next) {
-  req.clearCookie('refreshToken')
-  res.redirect('/');
+  res.cookie('refreshToken', '', {
+    domain: req.hostname,
+    maxAge: 0,
+    overwrite: true,
+  });
+  res.cookie('token', '', {
+    domain: req.hostname,
+    maxAge: 0,
+    overwrite: true,
+  });
+  res.send('/');
 });
 
 
