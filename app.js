@@ -134,7 +134,7 @@ io.on('connection', (socket) => {
 
   socket.on('chat message', (msg) => {
 
-      socket.broadcast.emit('chat message', msg);
+      socket.broadcast.emit('chat message', socket.username+' '+msg);
 
 
   });
@@ -144,7 +144,7 @@ io.on('connection', (socket) => {
       if (err) console.log(err)
       doc.save()
     });
-    //let name = findUser(socket.id)
+    socket.username = username
     var message = username + ' connected ';
     socket.broadcast.emit('user connected',message)
 
@@ -152,33 +152,17 @@ io.on('connection', (socket) => {
 
   })
   socket.on('disconnect', function() {
-    var message =   ' disconnected'
-    io.emit('chat message', message)
-
-
+    var message =   socket.username +' disconnected'
+    socket.broadcast.emit('chat message', message);
   });
-  socket.on('typing', function(typing, stopped,username){
-    var msg =username+' is typing...'
+  socket.on('typing', function(typing, stopped){
+    var msg =socket.username+' is typing...'
     if (typing === false ){
       socket.broadcast.emit('typing', msg )
     }else if(stopped === true){
       socket.broadcast.emit('stopped');
     }
   });
-  function findUser(sId){
-
-    User.find(
-        {}
-        , function (err, user) {
-          if (err) console.log(err);
-          console.log('sID:     '+sId )
-          console.log(user)
-          let username = user.name;
-          return username;
-        })
-
-
-  }
 });
 
 

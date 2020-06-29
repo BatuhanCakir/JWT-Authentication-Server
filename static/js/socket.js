@@ -11,7 +11,7 @@ $(document).ready(function(){
             var input =  $('#m').val()
             e.preventDefault(); // prevents page reloading
             if(input.length > 0){
-                socket.emit('chat message', username +' '+input);
+                socket.emit('chat message',input);
                 $('#messages').append($("<li>").text(input).css('text-align', 'right'))
             }
 
@@ -22,7 +22,7 @@ $(document).ready(function(){
         var stopped = false;
         $('#m').on('input',function(e){
             e.preventDefault(); // prevents page reloading
-            socket.emit('typing',typing,stopped,username);
+            socket.emit('typing',typing,stopped);
             typing = true
             stopped = false;
 
@@ -51,9 +51,7 @@ $(document).ready(function(){
 
             $('#messages').append($('<li>').text(msg));
         });
-        socket.on('disconnect', function(msg){
-            var message = username + msg
-            $('#messages').append($('<li>').text(message));
-        });
+
+
 
     })})
