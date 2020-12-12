@@ -15,28 +15,13 @@ let io     = require('socket.io')(server);
 app.use(session({secret: 'mySecret', resave: false, saveUninitialized: false}));
 
 app.use(express.static(path.join(__dirname, 'static')));
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-//app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-app.use(bodyParser.json());
 require('dotenv').config();
-require('./models/user')
 
-const mongoose = require('mongoose');
-var User = mongoose.model('User');
-mongoose.connect(process.env.MONGODB_URL,{
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-  useFindAndModify:false
-})
 
 app.post('/register', (req, res,next) => {
   User.findOne({
@@ -97,10 +82,6 @@ function authenticateToken(req,res,next){
   })
 }
 
-app.get('/', function(req, res, next) {
-  res.render('username')
-
-});
 
 app.get('/token', function(req, res) {
   const refreshToken = req.cookies.refreshToken
@@ -115,12 +96,6 @@ app.get('/token', function(req, res) {
     res.redirect(url)
   })
 })
-app.get('/chat',authenticateToken, function(req, res, next) {
- var context= req.user.user;
-  res.render('index' ,{username:context});
-
-
-});
 
 app.get('/logout', function(req, res, next) {
   console.log(req.get('host'))
@@ -135,47 +110,6 @@ app.get('/logout', function(req, res, next) {
   });
   res.send('/');
 });
-
-
-users = []
-io.on('connection', (socket) => {
-
-
-  socket.on('chat message', (msg) => {
-
-      socket.broadcast.emit('chat message', socket.username+' '+msg);
-
-
-  });
-
-  socket.on('new user',(username)=>{
-    User.findOneAndUpdate({name:username},{socketID:socket.id},{new: true},function(err, doc) {
-      if (err) console.log(err)
-      doc.save()
-    });
-    socket.username = username
-    var message = username + ' connected ';
-    socket.broadcast.emit('user connected',message)
-
-
-
-  })
-  socket.on('disconnect', function() {
-    var message =   socket.username +' disconnected'
-    socket.broadcast.emit('chat message', message);
-  });
-  socket.on('typing', function(typing, stopped){
-    var msg =socket.username+' is typing...'
-    if (typing === false ){
-      socket.broadcast.emit('typing', msg )
-    }else if(stopped === true){
-      socket.broadcast.emit('stopped');
-    }
-  });
-});
-
-
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
